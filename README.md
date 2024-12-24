@@ -85,7 +85,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-Your Name - [Email](mailto:itsmithun01@gmail.com)
+Email - [itsmithun01@gmail.com](mailto:itsmithun01@gmail.com)
 
 Project Link: [https://github.com/mithun-ctrl/senpai-list](https://github.com/mithun-ctrl/senpai-list)
 
