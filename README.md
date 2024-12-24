@@ -79,10 +79,6 @@ npm start
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Contact
 
 Email - [itsmithun01@gmail.com](mailto:itsmithun01@gmail.com)
@@ -91,6 +87,12 @@ Project Link: [https://github.com/mithun-ctrl/senpai-list](https://github.com/mi
 
 ## Acknowledgments
 
-- List any resources, libraries, or tools you used
-- Credit any inspiration or reference projects
-- Thank contributors or mentors
+- This project was built using the MERN stack (MongoDB, Express.js, React.js, and Node.js).
+- ShadCN was used for enhancing the user interface.
+- React Hot Toast was used for notifications.
+- TMDB api is was used for fetching movie/anime/series details.
+
+
+## License
+
+This project is licensed under the MIT License
