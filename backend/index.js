@@ -10,7 +10,7 @@ import path from "path";
 const app = express();
 
 const corsOption = {
-  origin:"http://localhost:5173",
+  origin:"https://quindecim.up.railway.app",
   credentials:true
 }
 
