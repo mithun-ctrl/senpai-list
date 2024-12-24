@@ -1,7 +1,20 @@
 import express from 'express';
-import { progressEpisode, addToList, updateProgress, getUserList, getUserStats, searchMedia, episodeProgress, deleteSingleList, deleteAllList } from '../controllers/mediaController.js';
+import { 
+    progressEpisode, 
+    addToList, 
+    updateProgress, 
+    getUserList, 
+    getUserStats, 
+    searchMedia,  
+    deleteSingleList, 
+    deleteAllList,
+    getSuggestions,
+    bulkUpdateStatus
+} 
+from '../controllers/mediaController.js';
+
 import { authenticateToken } from '../middleware/auth.js';
-import { MediaItem } from '../models/MediaItem.js';
+
 
 const router = express.Router();
 
@@ -12,6 +25,8 @@ router.put('/list/:id', updateProgress);
 router.get('/list', getUserList);
 router.get('/stats', getUserStats);
 router.get('/search', searchMedia);
+router.get('/suggestions', getSuggestions);
+router.post('/bulk-status', bulkUpdateStatus);
 router.put('/list/:id/progress', progressEpisode);
 router.delete('/list/:id', deleteSingleList)
 router.delete('/list', deleteAllList)
