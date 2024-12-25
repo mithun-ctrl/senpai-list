@@ -28,33 +28,31 @@ import {
 } from "@/components/ui/alert-dialog";
 import { NavLink } from 'react-router-dom';
 
-// Custom Select Component
 const Select = ({ icon: Icon, value, onChange, options }) => (
   <div className="relative">
-    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
+    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-red-400">
       <Icon className="h-4 w-4" />
     </div>
     <select
       value={value}
       onChange={onChange}
-      className="appearance-none w-full pl-10 pr-10 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-700"
+      className="appearance-none w-full pl-10 pr-10 py-2 bg-gray-800 border border-red-800 rounded-lg text-gray-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all"
     >
       {options.map(({ value, label }) => (
-        <option key={value} value={value}>
+        <option key={value} value={value} className="bg-gray-800">
           {label}
         </option>
       ))}
     </select>
-    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400">
+    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-red-400">
       <ChevronDown className="h-4 w-4" />
     </div>
   </div>
 );
 
-// Enhanced Search Input Component
 const SearchInput = ({ value, onChange, onClear }) => (
   <div className="relative flex-1 min-w-[240px]">
-    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
+    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-red-400">
       <Search className="h-4 w-4" />
     </div>
     <input
@@ -62,12 +60,12 @@ const SearchInput = ({ value, onChange, onClear }) => (
       placeholder="Search titles..."
       value={value}
       onChange={onChange}
-      className="w-full pl-10 pr-10 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400"
+      className="w-full pl-10 pr-10 py-2 bg-gray-800 border border-red-800 rounded-lg text-gray-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all placeholder:text-gray-500"
     />
     {value && (
       <button
         onClick={onClear}
-        className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+        className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-red-400"
       >
         <X className="h-4 w-4" />
       </button>
@@ -92,17 +90,17 @@ const EpisodeProgress = ({ current, total, onUpdate }) => {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-gray-600">Episodes</span>
+        <span className="text-sm text-gray-400">Episodes</span>
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleUpdate(localCount - 1)}
             className="p-1 rounded-full hover:bg-red-100 disabled:opacity-0 disabled:cursor-not-allowed"
             disabled={localCount <= 0}
           >
-            <Minus className="w-4 h-4 text-gray-600" />
+            <Minus className="w-4 h-4 text-gray-500" />
           </button>
           
-          <span className="text-sm font-medium min-w-[60px] text-center">
+          <span className="text-sm text-gray-400 font-medium min-w-[60px] text-center">
             {localCount} / {total}
           </span>
           
@@ -111,7 +109,7 @@ const EpisodeProgress = ({ current, total, onUpdate }) => {
             className="p-1 rounded-full hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={localCount >= total}
           >
-            <Plus className="w-4 h-4 text-gray-600" />
+            <Plus className="w-4 h-4 text-gray-500" />
           </button>
         </div>
       </div>
@@ -124,14 +122,13 @@ const EpisodeProgress = ({ current, total, onUpdate }) => {
   );
 };
 
-// Status Badge Component
 const StatusBadge = ({ status }) => {
   const colors = {
-    planning: 'bg-blue-100 text-blue-700 border-blue-200',
-    in_progress: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    completed: 'bg-green-100 text-green-700 border-green-200',
-    on_hold: 'bg-orange-100 text-orange-700 border-orange-200',
-    dropped: 'bg-red-100 text-red-700 border-red-200'
+    planning: 'bg-blue-900/50 text-blue-200 border-blue-800',
+    in_progress: 'bg-yellow-900/100 text-yellow-200 border-yellow-800',
+    completed: 'bg-green-900/100 text-green-200 border-green-800',
+    on_hold: 'bg-orange-900/100 text-orange-200 border-orange-800',
+    dropped: 'bg-red-900/100 text-red-200 border-red-800'
   };
   return (
     <span className={`px-2 py-1 rounded-full text-xs font-medium border ${colors[status]}`}>
@@ -140,7 +137,7 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-// Progress Bar Component
+
 const DraggableProgressBar = ({ current, total, onUpdate }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [localValue, setLocalValue] = useState(current);
@@ -208,27 +205,27 @@ const DraggableProgressBar = ({ current, total, onUpdate }) => {
     <div className="space-y-2">
       <div 
         ref={progressRef}
-        className="relative w-full bg-gray-100 rounded-full h-2 cursor-pointer group"
+        className="relative w-full bg-gray-700 rounded-full h-2 cursor-pointer group"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
         <div
-          className="absolute bg-blue-600 h-full rounded-full transition-all duration-100"
+          className="absolute bg-red-600 h-full rounded-full transition-all duration-100"
           style={{ width: `${(localValue / total) * 100}%` }}
         />
         
         <div
-          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-white border-2 border-blue-600 rounded-full transition-all
+          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-gray-800 border-2 border-red-600 rounded-full transition-all
             ${isDragging ? 'scale-125' : 'scale-100 group-hover:scale-110'}
             cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
           style={{ left: `${(localValue / total) * 100}%` }}
         />
 
-        <div className="absolute inset-0 rounded-full bg-blue-100 opacity-0 group-hover:opacity-10 pointer-events-none" />
+        <div className="absolute inset-0 rounded-full bg-red-500/10 opacity-0 group-hover:opacity-30 pointer-events-none" />
       </div>
 
-      <div className="flex justify-between text-sm text-gray-600">
+      <div className="flex justify-between text-sm text-gray-400">
         <span>Episode {localValue}</span>
         <span>Total {total}</span>
       </div>
@@ -236,7 +233,6 @@ const DraggableProgressBar = ({ current, total, onUpdate }) => {
   );
 };
 
-// Rating Stars Component
 const RatingStars = ({ rating }) => (
   <div className="flex items-center gap-1">
     {[...Array(10)].map((_, i) => (
@@ -244,19 +240,19 @@ const RatingStars = ({ rating }) => (
         key={i}
         className={`w-4 h-4 ${
           i < rating 
-            ? 'text-yellow-400 fill-yellow-400' 
-            : 'text-gray-300'
+            ? 'text-red-500 fill-red-500' 
+            : 'text-gray-700'
         }`}
       />
     ))}
-    <span className="ml-2 text-sm text-gray-600">{rating}/10</span>
+    <span className="ml-2 text-sm text-gray-400">{rating}/10</span>
   </div>
 );
 
 const MediaCard = ({ item, onStatusUpdate, onProgressUpdate, statusOptions, viewStyle, onDelete }) => {
   const cardClass = viewStyle === 'grid'
-    ? "bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 group relative"
-    : "bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 group flex relative";
+    ? "bg-gray-800 rounded-xl shadow-lg hover:shadow-red-900/30 transition-all duration-300 overflow-hidden border border-red-900 hover:border-red-700 group relative"
+    : "bg-gray-800 rounded-xl shadow-lg hover:shadow-red-900/30 transition-all duration-300 overflow-hidden border border-red-900 hover:border-red-700 group flex relative";
 
   const imageClass = viewStyle === 'grid'
     ? "relative aspect-[4/3] overflow-hidden"
@@ -266,15 +262,15 @@ const MediaCard = ({ item, onStatusUpdate, onProgressUpdate, statusOptions, view
     ? "p-4 space-y-4"
     : "p-4 space-y-4 flex-1";
 
-  return (
-    <div className={cardClass}>
-      <button
-        onClick={() => onDelete(item._id)}
-        className="absolute top-2 right-2 p-2 bg-red-100 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-200 z-10"
-        title="Delete"
-      >
-        <Trash2 className="w-4 h-4 text-red-600" />
-      </button>
+    return (
+      <div className={cardClass}>
+        <button
+          onClick={() => onDelete(item._id)}
+          className="absolute top-2 right-2 p-2 bg-red-900/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-800 z-10"
+          title="Delete"
+        >
+          <Trash2 className="w-4 h-4 text-red-300" />
+        </button>
       <div className={imageClass}>
         {item.posterPath ? (
           <img
@@ -295,7 +291,7 @@ const MediaCard = ({ item, onStatusUpdate, onProgressUpdate, statusOptions, view
       
       <div className={contentClass}>
         <div>
-          <h3 className="text-lg font-semibold mb-1 line-clamp-2">
+          <h3 className="text-lg font-semibold mb-1 line-clamp-2 text-transparent bg-gradient-to-r bg-clip-text from-red-300 to-red-200 ">
             {item.title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -339,19 +335,20 @@ const MediaCard = ({ item, onStatusUpdate, onProgressUpdate, statusOptions, view
 
 // Loading Skeleton Component
 const LoadingSkeleton = () => (
-  <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-    <div className="aspect-[2/3] bg-gray-200 animate-pulse" />
+  <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-red-900">
+    <div className="aspect-[2/3] bg-gray-700 animate-pulse" />
     <div className="p-4 space-y-4">
       <div className="space-y-2">
-        <div className="h-6 bg-gray-200 rounded animate-pulse" />
-        <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse" />
+        <div className="h-6 bg-gray-700 rounded animate-pulse" />
+        <div className="h-4 bg-gray-700 rounded w-2/3 animate-pulse" />
       </div>
-      <div className="h-10 bg-gray-200 rounded animate-pulse" />
-      <div className="h-4 bg-gray-200 rounded animate-pulse" />
-      <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+      <div className="h-10 bg-gray-700 rounded animate-pulse" />
+      <div className="h-4 bg-gray-700 rounded animate-pulse" />
+      <div className="h-4 bg-gray-700 rounded w-3/4 animate-pulse" />
     </div>
   </div>
 );
+
 
 // Main Media List Component
 const MediaList = () => {
@@ -501,20 +498,22 @@ const MediaList = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Media List</h1>
-            <p className="text-gray-600 mt-1">
-              {totalItems} items in your collection
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text font-['Fira_Sans']">
+              デビル コレクション
+            </h1>
+            <p className="text-gray-400 mt-1">
+              {totalItems} あなたのコレクションの中の魂
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center bg-gray-700 rounded-lg p-1">
               <button
                 onClick={() => setViewStyle('grid')}
                 className={`p-2 rounded-md transition-colors ${
                   viewStyle === 'grid'
-                    ? 'bg-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-gray-800 shadow-lg shadow-red-900/20'
+                    : 'text-gray-400 hover:text-red-400'
                 }`}
               >
                 <LayoutGrid className="w-4 h-4" />
@@ -523,8 +522,8 @@ const MediaList = () => {
                 onClick={() => setViewStyle('list')}
                 className={`p-2 rounded-md transition-colors ${
                   viewStyle === 'list'
-                    ? 'bg-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-gray-800 shadow-lg shadow-red-900/20'
+                    : 'text-gray-400 hover:text-red-400'
                 }`}
               >
                 <LayoutList className="w-4 h-4" />
@@ -534,14 +533,17 @@ const MediaList = () => {
             {mediaList.length > 0 && (
               <button
                 onClick={() => setDeleteDialogOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-700 transition-colors border border-red-600"
               >
                 <Trash2 className="w-4 h-4" />
                 Delete All
               </button>
             )}
 
-            <NavLink to="/search" className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <NavLink 
+              to="/search" 
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-700 transition-colors border border-red-600"
+            >
               <Plus className="w-4 h-4" />
               Add New
             </NavLink>
@@ -578,21 +580,23 @@ const MediaList = () => {
       </div>
       
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-gray-800 border-2 border-red-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
+            <AlertDialogTitle className="flex items-center gap-2 text-white">
               <AlertTriangle className="w-5 h-5 text-red-500" />
               Delete All Items
             </AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete all items from your media list? This action cannot be undone.
+            <AlertDialogDescription className="text-gray-400">
+              Are you sure you want to delete all items from your collection? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="bg-gray-700 text-white hover:bg-gray-600 border border-red-800">
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAll}
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-red-800 text-white hover:bg-red-700 border border-red-600"
             >
               Delete All
             </AlertDialogAction>

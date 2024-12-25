@@ -174,15 +174,15 @@ const SearchMedia = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gray-900">
+      <div className="max-w-7xl mx-auto space-y-8 p-6">
         {/* Header Section */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-purple-800 animate-fade-in">
-            Discover Anime & Shows
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text font-['Fira_Sans'] animate-fade-in">
+            デビル Search
           </h1>
-          <p className="text-purple-600 max-w-2xl mx-auto">
-            Search through millions of anime, movies, and TV shows. Add them to your watchlist and never miss out on great entertainment.
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Unleash your next obsession. Discover the darkest, most thrilling anime and shows in our collection.
           </p>
         </div>
 
@@ -190,7 +190,7 @@ const SearchMedia = () => {
         <form onSubmit={handleSearch} className="max-w-3xl mx-auto relative">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-purple-400" />
+              <Search className="h-5 w-5 text-red-400" />
             </div>
             <Input
               ref={searchInputRef}
@@ -198,8 +198,8 @@ const SearchMedia = () => {
               value={searchQuery}
               onChange={handleSearchInputChange}
               onFocus={() => setShowSuggestions(true)}
-              placeholder="Search for anime, movies, or shows..."
-              className="w-full pl-12 pr-4 py-6 border-2 border-purple-200 focus:border-purple-400 rounded-2xl shadow-lg transition-all duration-300"
+              placeholder="Search for your next obsession..."
+              className="w-full pl-12 pr-4 py-6 bg-gray-800 border-2 border-red-800 focus:border-red-500 rounded-xl text-white placeholder:text-gray-500 shadow-lg shadow-red-900/20 transition-all duration-300"
             />
             {searchQuery && (
               <button
@@ -208,7 +208,7 @@ const SearchMedia = () => {
                   setSearchQuery('');
                   setSuggestions([]);
                 }}
-                className="absolute right-16 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-16 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-400"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -216,7 +216,7 @@ const SearchMedia = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-purple-600 hover:bg-purple-700 rounded-xl"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-red-800 hover:bg-red-700 rounded-lg border border-red-600"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -230,30 +230,30 @@ const SearchMedia = () => {
           {showSuggestions && suggestions.length > 0 && (
             <div
               ref={suggestionsRef}
-              className="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-xl border-2 border-purple-100 overflow-hidden"
+              className="absolute z-50 w-full mt-2 bg-gray-800 rounded-xl shadow-xl border-2 border-red-800 overflow-hidden"
             >
               {suggestions.map((item) => (
                 <div
                   key={item.id}
-                  className="p-4 hover:bg-purple-50 transition-colors duration-200 flex items-center justify-between border-b border-purple-100 last:border-none"
+                  className="p-4 hover:bg-gray-700 transition-colors duration-200 flex items-center justify-between border-b border-red-900 last:border-none"
                 >
                   <div className="flex items-center space-x-4">
                     {item.poster_path ? (
                       <img
                         src={`https://image.tmdb.org/t/p/w92${item.poster_path}`}
                         alt={item.title || item.name}
-                        className="w-12 h-16 object-cover rounded-lg"
+                        className="w-12 h-16 object-cover rounded-lg border border-red-800"
                       />
                     ) : (
-                      <div className="w-12 h-16 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Star className="h-6 w-6 text-purple-300" />
+                      <div className="w-12 h-16 bg-gray-700 rounded-lg flex items-center justify-center border border-red-800">
+                        <Star className="h-6 w-6 text-red-400" />
                       </div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-purple-800">
+                      <h4 className="font-semibold text-white">
                         {item.title || item.name}
                       </h4>
-                      <p className="text-sm text-purple-600">
+                      <p className="text-sm text-gray-400">
                         {item.release_date || item.first_air_date}
                       </p>
                     </div>
@@ -263,7 +263,7 @@ const SearchMedia = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => handleShowDetails(item)}
-                      className="border-purple-200 hover:bg-purple-50"
+                      className="border-red-800 hover:bg-gray-700 text-red-400"
                     >
                       <Info className="h-4 w-4" />
                     </Button>
@@ -273,7 +273,7 @@ const SearchMedia = () => {
                         handleAddToList(item);
                         setShowSuggestions(false);
                       }}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      className="bg-red-800 hover:bg-red-700 border border-red-600"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Add
@@ -285,13 +285,13 @@ const SearchMedia = () => {
           )}
         </form>
 
-        {/* Results Grid with Anime Styling */}
+        {/* Results Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {searchResults.map((media, index) => (
             <div 
               key={`${media.id}-${index}`}
               ref={index === searchResults.length - 1 ? lastElementRef : null}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-purple-100 hover:border-purple-300 transform hover:-translate-y-1"
+              className="bg-gray-800 rounded-xl shadow-lg hover:shadow-red-900/30 transition-all duration-300 overflow-hidden border-2 border-red-900 hover:border-red-700 transform hover:-translate-y-1"
             >
               {media.poster_path ? (
                 <div className="relative group">
@@ -301,22 +301,22 @@ const SearchMedia = () => {
                     className="w-full h-64 object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-purple-900 bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />
+                  <div className="absolute inset-0 bg-red-900 bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />
                 </div>
               ) : (
-                <div className="w-full h-64 bg-purple-50 flex items-center justify-center">
-                  <Star className="h-12 w-12 text-purple-200" />
+                <div className="w-full h-64 bg-gray-700 flex items-center justify-center">
+                  <Star className="h-12 w-12 text-red-400" />
                 </div>
               )}
               <div className="p-4 flex flex-col">
-                <h3 className="font-bold text-lg text-purple-800 mb-2 line-clamp-1">
+                <h3 className="font-bold text-lg text-white mb-2 line-clamp-1">
                   {media.title || media.name}
                 </h3>
-                <p className="text-sm text-purple-600 mb-4 line-clamp-3 flex-1">
+                <p className="text-sm text-gray-400 mb-4 line-clamp-3 flex-1">
                   {media.overview}
                 </p>
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="text-sm font-medium px-3 py-1 rounded-full bg-purple-100 text-purple-600 capitalize">
+                  <span className="text-sm font-medium px-3 py-1 rounded-full bg-red-900/50 text-red-300 border border-red-800 capitalize">
                     {media.media_type}
                   </span>
                   <div className="flex gap-2">
@@ -324,14 +324,14 @@ const SearchMedia = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleShowDetails(media)}
-                      className="border-purple-200 hover:bg-purple-50"
+                      className="border-red-800 hover:bg-gray-700 text-red-400"
                     >
                       <Info className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
                       onClick={() => handleAddToList(media)}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      className="bg-red-800 hover:bg-red-700 border border-red-600"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Add
@@ -346,25 +346,25 @@ const SearchMedia = () => {
         {/* Loading More Indicator */}
         {loading && page > 1 && (
           <div className="flex justify-center py-4">
-            <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+            <Loader2 className="h-6 w-6 animate-spin text-red-400" />
           </div>
         )}
 
         {/* Empty State */}
         {searchResults.length === 0 && !loading && (
           <div className="text-center py-12">
-            <p className="text-purple-600">
-              {searchQuery ? 'No results found. Try a different search.' : 'Start searching to discover great anime and shows!'}
+            <p className="text-gray-400">
+              {searchQuery ? 'No results found. Try a different search.' : 'Start searching to unleash your next obsession.'}
             </p>
           </div>
         )}
 
         {/* Details Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-md bg-white rounded-xl border-2 border-purple-100">
+          <DialogContent className="sm:max-w-md bg-gray-800 rounded-xl border-2 border-red-800">
             <DialogHeader>
-              <DialogTitle className="text-purple-800">{selectedMedia?.title || selectedMedia?.name}</DialogTitle>
-              <DialogDescription className="text-purple-600">
+              <DialogTitle className="text-white">{selectedMedia?.title || selectedMedia?.name}</DialogTitle>
+              <DialogDescription className="text-gray-400">
                 Released: {selectedMedia?.release_date || selectedMedia?.first_air_date}
               </DialogDescription>
             </DialogHeader>
@@ -373,19 +373,19 @@ const SearchMedia = () => {
                 <img
                   src={`https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`}
                   alt={selectedMedia.title || selectedMedia.name}
-                  className="w-full h-64 object-cover rounded-lg"
+                  className="w-full h-64 object-cover rounded-lg border border-red-800"
                 />
-                <p className="text-sm text-purple-600">{selectedMedia.overview}</p>
+                <p className="text-sm text-gray-400">{selectedMedia.overview}</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-purple-800">Rating:</span>
-                  <span className="text-sm text-purple-600">
+                  <span className="text-sm font-medium text-white">Rating:</span>
+                  <span className="text-sm text-red-400">
                     {selectedMedia.vote_average?.toFixed(1)} / 10
                   </span>
                 </div>
               </div>
             )}
             <DialogFooter>
-              <Button onClick={() => setDialogOpen(false)} className="bg-purple-600 hover:bg-purple-700">
+              <Button onClick={() => setDialogOpen(false)} className="bg-red-800 hover:bg-red-700 border border-red-600">
                 Close
               </Button>
             </DialogFooter>

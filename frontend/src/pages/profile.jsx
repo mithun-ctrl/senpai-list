@@ -1,187 +1,153 @@
-import { useState } from 'react';
-import { useAuth } from '../contexts/authContext';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Flame, Skull, Clock, Star } from 'lucide-react';
 import api from '../utils/api';
-import { User, Mail, Lock, Save } from 'lucide-react';
-import { toast } from 'react-hot-toast'
 
-const Input = ({ icon: Icon, ...props }) => (
-  <div className="relative">
-    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
-      <Icon className="h-4 w-4" />
-    </div>
-    <input
-      {...props}
-      className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-    />
-  </div>
-);
+const Dashboard = () => {
+  const [stats, setStats] = useState(null);
+  const [recentItems, setRecentItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const Button = ({ children, isLoading, ...props }) => (
-  <button
-    {...props}
-    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-  >
-    {isLoading ? (
-      <>
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-        Processing...
-      </>
-    ) : (
-      children
-    )}
-  </button>
-);
-
-const Alert = ({ type, children }) => (
-  <div
-    className={`p-4 rounded-lg ${
-      type === 'success' 
-        ? 'bg-green-50 text-green-700 border border-green-200' 
-        : 'bg-red-50 text-red-700 border border-red-200'
-    }`}
-  >
-    {children}
-  </div>
-);
-
-const Card = ({ title, description, children }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-    <div className="p-6">
-      <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
-      {description && (
-        <p className="mt-1 text-sm text-gray-500">{description}</p>
-      )}
-    </div>
-    <div className="px-6 pb-6">{children}</div>
-  </div>
-);
-
-const Profile = () => {
-  const { user } = useAuth();
-  const [formData, setFormData] = useState({
-    username: user.username,
-    email: user.email,
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: ''
-  });
-  const [message, setMessage] = useState({ type: '', text: '' });
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage({ type: '', text: '' });
-    setIsLoading(true);
-
-    if (formData.newPassword && formData.newPassword !== formData.confirmNewPassword) {
-      toast.error('New passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
+  const fetchDashboardData = async () => {
     try {
-      const updateData = {
-        username: formData.username,
-        email: formData.email
-      };
-
-      if (formData.currentPassword && formData.newPassword) {
-        updateData.currentPassword = formData.currentPassword;
-        updateData.newPassword = formData.newPassword;
-      }
-
-      await api.put('/auth/profile', updateData);
-      toast.success('Profile updated successfully!');
-      
-      setFormData(prev => ({
-        ...prev,
-        currentPassword: '',
-        newPassword: '',
-        confirmNewPassword: ''
-      }));
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to update profile');
+      const [statsResponse, recentResponse] = await Promise.all([
+        api.get('/media/stats'),
+        api.get('/media/list?limit=5&sort=updatedAt&order=desc')
+      ]);
+      setStats(statsResponse.data);
+      setRecentItems(recentResponse.data.items);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-red-500 rounded-full animate-spin-slow opacity-30"></div>
+          <div className="w-12 h-12 border-4 border-red-600 rounded-full animate-spin-reverse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50"></div>
+          <div className="w-8 h-8 border-4 border-red-700 rounded-full animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-70"></div>
+          <div className="w-2 h-2 bg-red-800 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const COLORS = ['#FF4444', '#FF8C00', '#FFD700', '#4A90E2', '#50C878'];
+  const STATUS_COLORS = {
+    planning: '#FFD700',
+    in_progress: '#4A90E2',
+    completed: '#50C878',
+    on_hold: '#FF8C00',
+    dropped: '#FF4444'
+  };
+
+  const statusData = stats ? Object.entries(stats.byStatus).map(([status, count]) => ({
+    name: status.replace('_', ' ').toUpperCase(),
+    value: count
+  })) : [];
+
+  const typeData = stats ? Object.entries(stats.byMediaType).map(([type, count]) => ({
+    name: type.toUpperCase(),
+    value: count
+  })) : [];
+
   return (
-    <div className="max-w-2xl mx-auto p-4 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
-        <p className="mt-2 text-gray-600">
-          Manage your account settings and set your preferences.
-        </p>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="bg-gray-900 rounded-lg shadow-lg border border-red-800 p-6">
+        <h1 className="text-2xl font-bold mb-4 text-red-400">Dashboard</h1>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-gray-800 p-4 rounded-lg border border-red-700">
+            <div className="flex items-center space-x-2">
+              <Flame className="text-red-500" size={24} />
+              <h3 className="text-lg font-semibold text-red-400">Total Items</h3>
+            </div>
+            <p className="text-3xl font-bold text-gray-200">{stats?.totalItems || 0}</p>
+          </div>
+          <div className="bg-gray-800 p-4 rounded-lg border border-red-700">
+            <div className="flex items-center space-x-2">
+              <Skull className="text-green-400" size={24} />
+              <h3 className="text-lg font-semibold text-green-400">Completed</h3>
+            </div>
+            <p className="text-3xl font-bold text-gray-200">{stats?.completedCount || 0}</p>
+          </div>
+          <div className="bg-gray-800 p-4 rounded-lg border border-red-700">
+            <div className="flex items-center space-x-2">
+              <Clock className="text-yellow-400" size={24} />
+              <h3 className="text-lg font-semibold text-yellow-400">In Progress</h3>
+            </div>
+            <p className="text-3xl font-bold text-gray-200">{stats?.byStatus?.in_progress || 0}</p>
+          </div>
+          <div className="bg-gray-800 p-4 rounded-lg border border-red-700">
+            <div className="flex items-center space-x-2">
+              <Star className="text-purple-400" size={24} />
+              <h3 className="text-lg font-semibold text-purple-400">Average Rating</h3>
+            </div>
+            <p className="text-3xl font-bold text-gray-200">{stats?.avgRating || 0}/10</p>
+          </div>
+        </div>
       </div>
 
-      {message.text && (
-        <Alert type={message.type}>{message.text}</Alert>
-      )}
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Card 
-          title="Personal Information" 
-          description="Update your personal details and contact information."
-        >
-          <div className="space-y-4">
-            <Input
-              icon={User}
-              type="text"
-              placeholder="Username"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-            />
+      </div>
 
-            <Input
-              icon={Mail}
-              type="email"
-              placeholder="Email address"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            />
-          </div>
-        </Card>
-
-        <Card title="Security">
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500 mb-4">
-              Change your password or update your security settings.
-            </p>
-
-            <Input
-              icon={Lock}
-              type="password"
-              placeholder="Current password"
-              value={formData.currentPassword}
-              onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-            />
-
-            <Input
-              icon={Lock}
-              type="password"
-              placeholder="New password"
-              value={formData.newPassword}
-              onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-            />
-
-            <Input
-              icon={Lock}
-              type="password"
-              placeholder="Confirm new password"
-              value={formData.confirmNewPassword}
-              onChange={(e) => setFormData({ ...formData, confirmNewPassword: e.target.value })}
-            />
-          </div>
-        </Card>
-
-        <Button type="submit" isLoading={isLoading}>
-          <Save className="h-4 w-4" />
-          Save Changes
-        </Button>
-      </form>
+      {/* Recent Activity Section */}
+      <div className="bg-gray-900 rounded-lg shadow-lg border border-red-800 p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-red-400">Recent Activity</h2>
+          <Link to="/list" className="text-red-400 hover:text-red-300 transition-colors duration-200">
+            View All →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {recentItems.map((item) => (
+            <div key={item._id} className="bg-gray-800 border border-red-700 rounded-lg p-4">
+              <div className="flex items-start space-x-4">
+                {item.posterPath ? (
+                  <img
+                    src={`https://image.tmdb.org/t/p/w92${item.posterPath}`}
+                    alt={item.title}
+                    className="w-16 h-24 object-cover rounded"
+                  />
+                ) : (
+                  <div className="w-16 h-24 bg-gray-700 rounded flex items-center justify-center text-gray-500">
+                    No Image
+                  </div>
+                )}
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg text-gray-200 line-clamp-1">{item.title}</h3>
+                  <p className="text-sm text-gray-400 capitalize">{item.mediaType}</p>
+                  <div className="mt-2">
+                    <span className="inline-block px-2 py-1 text-xs rounded-full" style={{
+                      backgroundColor: STATUS_COLORS[item.status] + '20',
+                      color: STATUS_COLORS[item.status]
+                    }}>
+                      {item.status.replace('_', ' ').toUpperCase()}
+                    </span>
+                  </div>
+                  {item.progress?.totalEpisodes && (
+                    <p className="text-sm text-gray-400 mt-1">
+                      Episode {item.progress.currentEpisode}/{item.progress.totalEpisodes}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Profile;
+export default Dashboard;
