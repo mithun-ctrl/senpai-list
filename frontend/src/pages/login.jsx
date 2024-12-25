@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import back from '../assets/images/login.jpg'
+import back from '../assets/images/login.webp';
 import { useAuth } from '../contexts/authContext';
 import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Input = ({ icon: Icon, ...props }) => (
   <div className="relative">
@@ -11,7 +12,7 @@ const Input = ({ icon: Icon, ...props }) => (
     </div>
     <input
       {...props}
-      className=" w-full pl-10 pr-4 py-3 bg-black/30 backdrop-blur-sm border-2 border-red-500/30 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all text-red-400 0laceholder-gray-400"
+      className="w-full pl-10 pr-4 py-3 bg-black/30 backdrop-blur-sm border-2 border-red-500/30 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all text-red-400 placeholder-gray-400"
     />
   </div>
 );
@@ -29,34 +30,23 @@ const Login = () => {
     try {
       await login(formData);
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred');
+      toast.error(err.response?.data?.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src={back}
-          alt="Anime Character" 
-          className="w-full h-full object-cover"
-        />
-        {/* Overlay gradients */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
-      </div>
+    <div className="min-h-screen flex flex-col lg:flex-row relative">
+      {/* Left Side - Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center relative bg-black/95 min-h-[100vh] lg:min-h-screen order-2 lg:order-1">
+        {/* Red energy effects - Adjusted for mobile */}
+        <div className="absolute top-1/4 left-1/4 w-48 md:w-96 h-48 md:h-96 bg-red-500/20 rounded-full mix-blend-overlay filter blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-48 md:w-96 h-48 md:h-96 bg-red-500/20 rounded-full mix-blend-overlay filter blur-3xl animate-pulse delay-700" />
 
-      {/* Red energy effects */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500/20 rounded-full mix-blend-overlay filter blur-3xl animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/20 rounded-full mix-blend-overlay filter blur-3xl animate-pulse delay-700" />
-      
-      <div className="max-w-md w-full space-y-8 p-8 relative z-10">
-        <div className="bg-black/40 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-red-500/20">
-          <div className="mb-8">
-            <h2 className="text-5xl font-bold text-center text-white mb-2">
+        <div className="w-full max-w-md p-4 md:p-8 relative z-10">
+          <div className="mb-6 md:mb-8">
+            <h2 className="text-4xl md:text-5xl font-bold text-center text-white mb-2">
               Welcome Back
             </h2>
             <div className="h-1 w-20 bg-gradient-to-r from-red-500 to-red-800 mx-auto rounded-full" />
@@ -65,14 +55,14 @@ const Login = () => {
             </p>
           </div>
           
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="p-4 rounded-xl bg-red-900/50 backdrop-blur-sm border border-red-500/50 text-red-200 animate-shake">
+              <div className="p-3 md:p-4 rounded-xl bg-red-900/50 backdrop-blur-sm border border-red-500/50 text-red-200 animate-shake text-sm md:text-base">
                 {error}
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <Input
                 icon={Mail}
                 type="email"
@@ -108,11 +98,11 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-white bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 border border-red-500/50 shadow-lg shadow-red-500/20"
+              className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-white bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 border border-red-500/50 shadow-lg shadow-red-500/20 text-sm md:text-base"
             >
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                  <Loader2 className="animate-spin h-4 w-4 md:h-5 md:w-5 mr-2" />
                   Powering Up...
                 </>
               ) : (
@@ -123,7 +113,7 @@ const Login = () => {
             <div className="text-center">
               <Link 
                 to="/register" 
-                className="text-sm font-medium text-gray-400 hover:text-red-400 transition-colors duration-200 hover:underline"
+                className="text-sm md:text-base font-medium text-gray-400 hover:text-red-400 transition-colors duration-200 hover:underline"
               >
                 New warrior? Join the battle
               </Link>
@@ -131,6 +121,21 @@ const Login = () => {
           </form>
         </div>
       </div>
+
+      {/* Right Side - Image */}
+      <div className="w-full lg:w-1/2 relative overflow-hidden min-h-[30vh] lg:min-h-screen order-1 lg:order-2">
+        <img 
+          src={back}
+          alt="Anime Character" 
+          className="w-full h-full object-cover"
+        />
+        {/* Overlay gradients - Adjusted for mobile */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-transparent to-transparent" />
+      </div>
+
+      {/* Divider Line - Only visible on desktop */}
+      <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-red-500/30 to-transparent" />
     </div>
   );
 };

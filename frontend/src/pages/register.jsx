@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import back from '../assets/images/register.jpg';
+import back from '../assets/images/register.webp';
 import { useAuth } from '../contexts/authContext';
 import { Eye, EyeOff, User, Mail, Lock, Loader2 } from 'lucide-react';
 
@@ -51,27 +51,28 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+    <div className="min-h-screen flex flex-col lg:flex-row relative">
+      {/* Left Side - Image */}
+      <div className="w-full lg:w-1/2 relative overflow-hidden min-h-[30vh] lg:min-h-screen order-1">
         <img 
           src={back}
           alt="Anime Character" 
           className="w-full h-full object-cover"
         />
-        {/* Overlay gradients */}
+        {/* Overlay gradients - Adjusted for mobile */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
       </div>
 
-      {/* Red energy effects */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500/20 rounded-full mix-blend-overlay filter blur-3xl animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/20 rounded-full mix-blend-overlay filter blur-3xl animate-pulse delay-700" />
-      
-      <div className="max-w-md w-full space-y-8 p-8 relative z-10">
-        <div className="bg-black/40 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-red-500/20">
-          <div className="mb-8">
-            <h2 className="text-5xl font-bold text-center text-white mb-2">
+      {/* Right Side - Register Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center relative bg-black/95 min-h-[100vh] lg:min-h-screen order-2">
+        {/* Red energy effects - Adjusted for mobile */}
+        <div className="absolute top-1/4 left-1/4 w-48 md:w-96 h-48 md:h-96 bg-red-500/20 rounded-full mix-blend-overlay filter blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-48 md:w-96 h-48 md:h-96 bg-red-500/20 rounded-full mix-blend-overlay filter blur-3xl animate-pulse delay-700" />
+
+        <div className="w-full max-w-md p-4 md:p-8 relative z-10">
+          <div className="mb-6 md:mb-8">
+            <h2 className="text-4xl md:text-5xl font-bold text-center text-white mb-2">
               Join The Battle
             </h2>
             <div className="h-1 w-20 bg-gradient-to-r from-red-500 to-red-800 mx-auto rounded-full" />
@@ -80,14 +81,14 @@ const Register = () => {
             </p>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="p-4 rounded-xl bg-red-900/50 backdrop-blur-sm border border-red-500/50 text-red-200 animate-shake">
+              <div className="p-3 md:p-4 rounded-xl bg-red-900/50 backdrop-blur-sm border border-red-500/50 text-red-200 animate-shake text-sm md:text-base">
                 {error}
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <Input
                 icon={User}
                 type="text"
@@ -154,11 +155,11 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-white bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 border border-red-500/50 shadow-lg shadow-red-500/20"
+              className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-white bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 border border-red-500/50 shadow-lg shadow-red-500/20 text-sm md:text-base"
             >
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                  <Loader2 className="animate-spin h-4 w-4 md:h-5 md:w-5 mr-2" />
                   Awakening Power...
                 </>
               ) : (
@@ -169,7 +170,7 @@ const Register = () => {
             <div className="text-center">
               <Link 
                 to="/login" 
-                className="text-sm font-medium text-gray-400 hover:text-red-400 transition-colors duration-200 hover:underline"
+                className="text-sm md:text-base font-medium text-gray-400 hover:text-red-400 transition-colors duration-200 hover:underline"
               >
                 Already a warrior? Return to battle
               </Link>
@@ -177,6 +178,9 @@ const Register = () => {
           </form>
         </div>
       </div>
+
+      {/* Divider Line - Only visible on desktop */}
+      <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-red-500/30 to-transparent" />
     </div>
   );
 };
