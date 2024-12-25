@@ -44,7 +44,7 @@ const Register = () => {
       const { confirmPassword, ...registerData } = formData;
       await register(registerData);
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred');
+      toast.error(err.response?.data?.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
