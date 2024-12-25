@@ -174,7 +174,7 @@ const SearchMedia = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-900 border border-red-800 rounded-lg shadow-lg">
       <div className="max-w-7xl mx-auto space-y-8 p-6">
         {/* Header Section */}
         <div className="text-center space-y-4">
