@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import back from '../assets/images/register.webp';
 import { useAuth } from '../contexts/authContext';
 import { Eye, EyeOff, User, Mail, Lock, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Input = ({ icon: Icon, ...props }) => (
   <div className="relative">
