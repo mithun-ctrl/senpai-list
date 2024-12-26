@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import back from '../assets/images/register.webp';
 import { useAuth } from '../contexts/authContext';
-import { Eye, EyeOff, User, Mail, Lock, Loader2 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Eye, EyeOff, Skull, Mail, Lock, Loader2 } from 'lucide-react';
 
 const Input = ({ icon: Icon, ...props }) => (
   <div className="relative">
@@ -12,7 +11,7 @@ const Input = ({ icon: Icon, ...props }) => (
     </div>
     <input
       {...props}
-      className="w-full pl-10 pr-4 py-3 bg-black/30 backdrop-blur-sm border-2 border-red-500/30 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all text-red-400 placeholder-gray-400"
+      className="w-full pl-10 pr-4 py-3 bg-black/30 backdrop-blur-2xl border-2 border-red-500/30 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all text-red-400 placeholder-gray-400"
     />
   </div>
 );
@@ -45,7 +44,7 @@ const Register = () => {
       const { confirmPassword, ...registerData } = formData;
       await register(registerData);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'An error occurred');
+      setError(err.response?.data?.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -91,7 +90,7 @@ const Register = () => {
 
             <div className="space-y-3 md:space-y-4">
               <Input
-                icon={User}
+                icon={Skull}
                 type="text"
                 placeholder="Choose your username"
                 required

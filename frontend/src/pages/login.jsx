@@ -12,7 +12,7 @@ const Input = ({ icon: Icon, ...props }) => (
     </div>
     <input
       {...props}
-      className="w-full pl-10 pr-4 py-3 bg-black/30 backdrop-blur-sm border-2 border-red-500/30 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all text-red-400 placeholder-gray-400"
+      className="w-full pl-10 pr-4 py-3 bg-black/30 backdrop-blur-2xl border-2 border-red-500/30 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all text-red-400 placeholder-gray-400"
     />
   </div>
 );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { List, ChevronRight } from 'lucide-react';
-import goku from '../../public/goku.mp4'
+import goku from '../../public/goku.webm'
 
 const HomePage = () => {
   const navigate = useNavigate();
