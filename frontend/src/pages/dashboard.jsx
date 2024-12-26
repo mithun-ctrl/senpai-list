@@ -12,7 +12,7 @@ const Dashboard = () => {
     try {
       const [statsResponse, recentResponse] = await Promise.all([
         api.get('/media/stats'),
-        api.get('/media/list?limit=5&sort=updatedAt&order=desc')
+        api.get('/media/list?limit=9&sort=updatedAt&order=desc')
       ]);
       setStats(statsResponse.data);
       setRecentItems(recentResponse.data.items);

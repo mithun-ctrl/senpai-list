@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
-import { Menu, X, User, LogOut, Layout as LayoutIcon, Flame } from 'lucide-react';
+import { Menu, X, User, LogOut, Layout as LayoutIcon, Flame, Home } from 'lucide-react';
+
 
 const Layout = () => {
   const { logout, user } = useAuth();
   const location = useLocation(); 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isHomePage = location.pathname==='/';
+
 
   const navigation = [
-    { name: 'Dashboard', path: '/', icon: Flame },
+    {name: 'Home', path: '/', icon: Home},
+    { name: 'Dashboard', path: '/dashboard', icon: Flame },
     { name: 'My List', path: '/list', icon: LayoutIcon },
     { name: 'Search', path: '/search', icon: LayoutIcon },
     { name: 'Profile', path: '/profile', icon: User }
@@ -20,15 +24,15 @@ const Layout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-red-900">
-      <nav className="bg-gray-900 shadow-lg border-b border-red-800">
+    <div className={`min-h-screen overflow-hidden ${isHomePage ? 'bg-transparent' : 'bg-gradient-to-br from-gray-900 to-red-900'}`}>
+      <nav className={`shadow-lg border-b border-red-800 ${isHomePage ? 'bg-transparent' : 'bg-gray-900'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             {/* Logo and Desktop Navigation */}
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <span className="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text font-['Fira_Sans']">
-                  デビル List
+                <span className="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text">
+                先生 リスト
                 </span>
               </div>
               

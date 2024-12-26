@@ -498,8 +498,8 @@ const MediaList = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text font-['Fira_Sans']">
-              デビル コレクション
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text ">
+            先生 Collection
             </h1>
             <p className="text-gray-400 mt-1">
               {totalItems} あなたのコレクションの中の魂

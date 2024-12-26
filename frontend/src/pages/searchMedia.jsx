@@ -178,8 +178,8 @@ const SearchMedia = () => {
       <div className="max-w-7xl mx-auto space-y-8 p-6">
         {/* Header Section */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text font-['Fira_Sans'] animate-fade-in">
-            デビル Search
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text animate-fade-in">
+          先生 Search
           </h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
             Unleash your next obsession. Discover the darkest, most thrilling anime and shows in our collection.
