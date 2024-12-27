@@ -255,8 +255,8 @@ const MediaCard = ({ item, onStatusUpdate, onProgressUpdate, statusOptions, view
     : "bg-gray-800 rounded-xl shadow-lg hover:shadow-red-900/30 transition-all duration-300 overflow-hidden border border-red-900 hover:border-red-700 group flex relative";
 
   const imageClass = viewStyle === 'grid'
-    ? "relative aspect-[4/3] overflow-hidden"
-    : "relative w-48 overflow-hidden";
+    ? "relative aspect-[3/2] overflow-hidden"
+    : "relative w-32 overflow-hidden";
 
   const contentClass = viewStyle === 'grid'
     ? "p-4 space-y-4"
@@ -360,7 +360,8 @@ const MediaList = () => {
     status: '',
     mediaType: '',
     search: '',
-    page: 1
+    page: 1,
+    limit: 500
   });
   const [totalItems, setTotalItems] = useState(0);
 
