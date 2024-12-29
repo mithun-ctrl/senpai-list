@@ -8,7 +8,12 @@ import animeRoutes from './routes/animeRoutes.js'
 
 const app = express();
 
-app.use(cors());
+const corsOption = {
+  origin:"https://quindecim.up.railway.app",
+  credentials:true
+}
+
+app.use(cors(corsOption));
 app.use(express.json());
 app.use(morgan('dev')); 
 
