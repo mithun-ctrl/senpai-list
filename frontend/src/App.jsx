@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './contexts/authContext'
-import Layout from './components/Navbar'
+import Layout from './components/navbar'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
 import MediaTVList from './pages/MovieTVList'
