@@ -5,6 +5,8 @@ import authRoutes from './routes/authRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
 import connectDatabase from './utils/connectDB.js'
 import animeRoutes from './routes/animeRoutes.js'
+import path from "path";
+
 
 const app = express();
 
@@ -17,31 +19,21 @@ app.use(cors(corsOption));
 app.use(express.json());
 app.use(morgan('dev')); 
 
+const _dirname = path.resolve();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/media', mediaRoutes);
-app.use('/api/anime', animeRoutes);
+app.use('/api/anim', animeRoutes);
 
-
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Something broke!',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
+app.use(express.static(path.join(_dirname, "/frontend/dist")))
+app.get('*', (req, res) =>{
+  res.sendFile(path.resolve(_dirname, "frontend", "dist", "index.html"))
+})
 
 
 connectDatabase().then(() => {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 })
