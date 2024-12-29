@@ -23,7 +23,7 @@ const _dirname = path.resolve();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/media', mediaRoutes);
-app.use('/api/anim', animeRoutes);
+app.use('/api/anime', animeRoutes);
 
 app.use(express.static(path.join(_dirname, "/frontend/dist")))
 app.get('*', (req, res) =>{
