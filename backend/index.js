@@ -5,7 +5,6 @@ import authRoutes from './routes/authRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
 import connectDatabase from './utils/connectDB.js'
 import animeRoutes from './routes/animeRoutes.js'
-import adminRoutes from './routes/adminRoutes.js'
 
 const app = express();
 
@@ -17,7 +16,6 @@ app.use(morgan('dev'));
 app.use('/api/auth', authRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/anime', animeRoutes);
-app.use('/api', adminRoutes);
 
 
 
