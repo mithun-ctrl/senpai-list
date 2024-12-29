@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const mediaItemSchema = new mongoose.Schema({
+const movieListSchema = new mongoose.Schema({
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
@@ -32,7 +32,8 @@ const mediaItemSchema = new mongoose.Schema({
     userRating: { 
         type: Number, 
         min: 0, 
-        max: 10 
+        max: 10,
+        default: null
     },
     notes: String,
     updatedAt: { 
@@ -41,4 +42,4 @@ const mediaItemSchema = new mongoose.Schema({
     }
 });
 
-export const MediaItem = mongoose.model('MediaItem', mediaItemSchema);
+export const MovieList = mongoose.model('MovieList', movieListSchema);

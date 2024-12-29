@@ -31,3 +31,4 @@ export const getMediaDetails = async (id, type) => {
     }
 };
 
+

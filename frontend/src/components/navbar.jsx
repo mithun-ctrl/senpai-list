@@ -1,57 +1,147 @@
 import { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
-import { Menu, X, User, LogOut, Layout as LayoutIcon, Flame, Home } from 'lucide-react';
-
+import {
+  Menu,
+  X,
+  User,
+  LogOut,
+  Flame,
+  Home,
+  Search,
+  List,
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Layout = () => {
   const { logout, user } = useAuth();
-  const location = useLocation(); 
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const isHomePage = location.pathname==='/';
-
+  const isHomePage = location.pathname === '/';
 
   const navigation = [
-    {name: 'Home', path: '/', icon: Home},
+    { name: 'Home', path: '/', icon: Home },
     { name: 'Dashboard', path: '/dashboard', icon: Flame },
-    { name: 'My List', path: '/list', icon: LayoutIcon },
-    { name: 'Search', path: '/search', icon: LayoutIcon },
+    {
+      name: 'My List ',
+      icon: List,
+      dropdownItems: [
+        { name: 'Anime', path: '/list/anime' },
+        { name: 'Movie', path: '/list/movie' }
+      ]
+    },
+    {
+      name: 'Search',
+      icon: Search,
+      dropdownItems: [
+        { name: 'Anime', path: '/search/anime' },
+        { name: 'Movie', path: '/search/movie' }
+      ]
+    },
     { name: 'Profile', path: '/profile', icon: User }
   ];
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+  const isPathActive = (path) => {
+    return location.pathname.startsWith(path);
+  };
+
+  const isDropdownActive = (item) => {
+    return item.dropdownItems?.some(dropdownItem =>
+      location.pathname.startsWith(dropdownItem.path)
+    );
+  };
+
+  const NavDropdown = ({ item, isMobile = false }) => (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger
+        className={`${isDropdownActive(item)
+            ? 'text-red-400'
+            : 'text-gray-400 hover:text-red-300'
+          } ${isMobile
+            ? 'flex items-center w-full px-3 py-2 text-base'
+            : 'inline-flex items-center px-3 pt-1 text-sm'
+          } font-medium focus:outline-none`}
+      >
+        <item.icon className={`${isMobile ? 'w-5 h-5 mr-3' : 'w-4 h-4 mr-2'}`} />
+        {item.name}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className={`${isMobile ? 'w-[calc(100vw-2rem)] mx-4' : 'w-40'} bg-gray-900 border border-red-800`}
+        align={isMobile ? "start" : "center"}
+        sideOffset={isMobile ? 0 : 4}
+      >
+        {item.dropdownItems.map((dropdownItem) => (
+          <DropdownMenuItem
+            key={dropdownItem.path}
+            className="focus:bg-gray-800 focus:text-red-400 p-0"
+          >
+            <Link
+              to={dropdownItem.path}
+              onClick={() => isMobile && setIsMobileMenuOpen(false)}
+              className={`${isPathActive(dropdownItem.path)
+                  ? 'text-red-400'
+                  : 'text-gray-300 hover:text-red-400'
+                } w-full px-3 py-2 block`}
+            >
+              {dropdownItem.name}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const renderNavItem = (item, isMobile = false) => {
+    if (item.dropdownItems) {
+      return <NavDropdown key={item.name} item={item} isMobile={isMobile} />;
+    }
+
+    const baseStyles = isPathActive(item.path)
+      ? 'text-red-400'
+      : 'text-gray-400 hover:text-red-300';
+
+    return (
+      <Link
+        key={item.path}
+        to={item.path}
+        onClick={() => isMobile && setIsMobileMenuOpen(false)}
+        className={`
+          ${baseStyles}
+          ${isMobile
+            ? 'flex items-center px-3 py-2 text-base'
+            : 'inline-flex items-center px-3 pt-1 text-sm'
+          } font-medium
+        `}
+      >
+        <item.icon className={`${isMobile ? 'w-5 h-5 mr-3' : 'w-4 h-4 mr-2'}`} />
+        {item.name}
+      </Link>
+    );
   };
 
   return (
-    <div className={`min-h-screen overflow-hidden ${isHomePage ? 'bg-transparent' : 'bg-gradient-to-br from-gray-900 to-red-900'}`}>
-      <nav className={`shadow-lg border-b border-red-800 ${isHomePage ? 'bg-transparent' : 'bg-gray-900'}`}>
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 to-red-900 overflow-x-hidden">
+      <nav className={`relative z-50 shadow-lg border-b border-red-800 ${isHomePage ? 'bg-transparent' : 'bg-gray-900'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             {/* Logo and Desktop Navigation */}
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <span className="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text">
-                先生 リスト
-                </span>
+                <NavLink to='/'>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-300 text-transparent bg-clip-text">
+                    sEnpAi リスト
+                  </span>
+                </NavLink>
               </div>
-              
+
               {/* Desktop Navigation */}
-              <div className="hidden md:ml-8 md:flex md:space-x-8">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`${
-                      location.pathname === item.path
-                        ? 'border-red-500 text-red-400'
-                        : 'border-transparent text-gray-400 hover:text-red-300 hover:border-red-400'
-                    } inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                  >
-                    <item.icon className="w-4 h-4 mr-2" />
-                    {item.name}
-                  </Link>
-                ))}
+              <div className="hidden md:ml-8 md:flex md:items-center md:space-x-4">
+                {navigation.map(item => renderNavItem(item))}
               </div>
             </div>
 
@@ -75,7 +165,7 @@ const Layout = () => {
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center">
               <button
-                onClick={toggleMobileMenu}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-red-400 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500 transition-colors duration-200"
               >
                 {isMobileMenuOpen ? (
@@ -91,24 +181,12 @@ const Layout = () => {
         {/* Mobile menu */}
         <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
           <div className="pt-2 pb-3 space-y-1 bg-gray-900">
-            {navigation.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`${
-                  location.pathname === item.path
-                    ? 'bg-gray-800 border-red-500 text-red-400'
-                    : 'border-transparent text-gray-400 hover:bg-gray-800 hover:border-red-400 hover:text-red-300'
-                } block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200`}
-              >
-                <div className="flex items-center">
-                  <item.icon className="w-5 h-5 mr-3" />
-                  {item.name}
-                </div>
-              </Link>
+            {navigation.map(item => (
+              <div key={item.name} className="px-2">
+                {renderNavItem(item, true)}
+              </div>
             ))}
-            
+
             {/* Mobile User Profile and Logout */}
             <div className="pt-4 pb-3 border-t border-red-800">
               <div className="flex items-center px-4 py-2">
@@ -121,20 +199,22 @@ const Layout = () => {
                   <div className="text-base font-medium text-gray-200">{user?.username}</div>
                 </div>
               </div>
-              <button
-                onClick={logout}
-                className="mt-3 w-full flex items-center justify-center px-4 py-2 text-base font-medium rounded-lg text-white bg-red-800 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 border border-red-600"
-              >
-                <LogOut className="w-5 h-5 mr-2" />
-                Logout
-              </button>
+              <div className="px-2">
+                <button
+                  onClick={logout}
+                  className="w-full flex items-center justify-center px-4 py-2 text-base font-medium rounded-lg text-white bg-red-800 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 border border-red-600"
+                >
+                  <LogOut className="w-5 h-5 mr-2" />
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="py-10">
+      <main className="relative z-0 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Outlet />
         </div>

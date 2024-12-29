@@ -1,17 +1,17 @@
 import express from 'express';
-import { 
-    progressEpisode, 
-    addToList, 
-    updateProgress, 
-    getUserList, 
-    getUserStats, 
-    searchMedia,  
-    deleteSingleList, 
+import {
+    progressEpisode,
+    addToList,
+    updateProgress,
+    getUserList,
+    getUserStats,
+    searchMedia,
+    deleteSingleList,
     deleteAllList,
     getSuggestions,
     bulkUpdateStatus
-} 
-from '../controllers/mediaController.js';
+}
+    from '../controllers/mediaController.js';
 
 import { authenticateToken } from '../middleware/auth.js';
 

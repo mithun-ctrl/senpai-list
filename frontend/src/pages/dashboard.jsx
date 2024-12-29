@@ -105,7 +105,7 @@ const Dashboard = () => {
       <div className="bg-gray-900 rounded-lg shadow-lg border border-red-800 p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-red-400">Recent Activity</h2>
-          <Link to="/list" className="text-red-400 hover:text-red-300 transition-colors duration-200">
+          <Link to="/list/movie" className="text-red-400 hover:text-red-300 transition-colors duration-200">
             View All →
           </Link>
         </div>

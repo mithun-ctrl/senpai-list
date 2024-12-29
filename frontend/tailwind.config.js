@@ -22,6 +22,10 @@ module.exports = {
         'spin-reverse': 'spin-reverse 2s linear infinite',
       },
       keyframes: {
+        shine: {
+          'from': { transform: 'translateX(-100%)' },
+          'to': { transform: 'translateX(100%)' }
+        },
         'spin-reverse': {
           '0%': { transform: 'translate(-50%, -50%) rotate(0deg)' },
           '100%': { transform: 'translate(-50%, -50%) rotate(-360deg)' },
@@ -29,6 +33,10 @@ module.exports = {
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+          '50%': { transform: 'translateY(-20px) rotate(180deg)' }
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
@@ -60,6 +68,8 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "slideIn": "slideIn 0.3s ease-out forwards",
         "slideOut": "slideOut 0.3s ease-in forwards",
+        'shine': 'shine 2s infinite',
+        'float': 'float 5s infinite ease-in-out'
       },
     },
   },

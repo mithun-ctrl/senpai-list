@@ -1,4 +1,4 @@
-import { MediaItem } from '../models/MediaItem.js';
+import { MovieList } from '../models/MovieModel.js';
 import * as tmdbService from '../services/tmdbService.js';
 import axios from 'axios';
 import mongoose from 'mongoose';
@@ -92,7 +92,7 @@ export const addToList = async (req, res) => {
       const userId = req.user._id;
 
       // Check if already in list
-      const existing = await MediaItem.findOne({ userId, tmdbId });
+      const existing = await MovieList.findOne({ userId, tmdbId });
       if (existing) {
           return res.status(400).json({ 
               message: 'Item already in your list' 
@@ -102,7 +102,7 @@ export const addToList = async (req, res) => {
       // Fetch media details from TMDB
       const mediaDetails = await tmdbService.getMediaDetails(tmdbId, mediaType);
       
-      const mediaItem = new MediaItem({
+      const movieList = new MovieList({
           userId,
           tmdbId,
           mediaType,
@@ -115,8 +115,8 @@ export const addToList = async (req, res) => {
           }
       });
 
-      await mediaItem.save();
-      res.status(201).json(mediaItem);
+      await movieList.save();
+      res.status(201).json(movieList);
   } catch (error) {
       console.error('Add to list error:', error);
       res.status(500).json({ message: error.message });
@@ -128,21 +128,37 @@ export const updateProgress = async (req, res) => {
         const { id } = req.params;
         const { status, currentEpisode, userRating, notes } = req.body;
 
-        const mediaItem = await MediaItem.findOne({ _id: id, userId: req.user._id });
-        if (!mediaItem) {
+        const movieList = await MovieList.findOne({ 
+          _id: id, 
+          userId: req.user._id 
+        });
+        
+        if (!movieList) {
             return res.status(404).json({ message: 'Media item not found' });
         }
 
-        if (status) mediaItem.status = status;
-        if (currentEpisode !== undefined) mediaItem.progress.currentEpisode = currentEpisode;
-        if (userRating !== undefined) mediaItem.userRating = userRating;
-        if (notes !== undefined) mediaItem.notes = notes;
+        // Update fields if provided
+        if (status) movieList.status = status;
+        if (currentEpisode !== undefined) {
+            movieList.progress.currentEpisode = currentEpisode;
+        }
+        if (userRating !== undefined) {
+            // Validate rating
+            if (userRating < 0 || userRating > 10) {
+                return res.status(400).json({ 
+                    message: 'Rating must be between 0 and 10' 
+                });
+            }
+            movieList.userRating = userRating;
+        }
+        if (notes !== undefined) movieList.notes = notes;
 
-        mediaItem.updatedAt = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
-        await mediaItem.save();
+        movieList.updatedAt = new Date();
+        await movieList.save();
 
-        res.json(mediaItem);
+        res.json(movieList);
     } catch (error) {
+        console.error('Update error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -189,20 +205,20 @@ export const getUserList = async (req, res) => {
         // Pagination
         const skip = (page - 1) * limit;
         
-        const [mediaItems, total] = await Promise.all([
-            MediaItem.find(query)
+        const [movieLists, total] = await Promise.all([
+            MovieList.find(query)
                 .sort(sortOptions)
                 .skip(skip)
                 .limit(parseInt(limit)),
-            MediaItem.countDocuments(query)
+            MovieList.countDocuments(query)
         ]);
 
         res.json({
-            items: mediaItems,
+            items: movieLists,
             total,
             page: parseInt(page),
             totalPages: Math.ceil(total / limit),
-            hasMore: skip + mediaItems.length < total
+            hasMore: skip + movieLists.length < total
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -213,7 +229,7 @@ export const getUserStats = async (req, res) => {
     try {
         const userId = req.user._id;
         
-        const stats = await MediaItem.aggregate([
+        const stats = await MovieList.aggregate([
             { $match: { userId: new mongoose.Types.ObjectId(userId) } },
             {
                 $group: {
@@ -283,7 +299,7 @@ export const searchMedia = async (req, res) => {
           // Check if item is already in user's list
           const userId = req.user?._id;
           const userItems = userId ? 
-              await MediaItem.find({ 
+              await MovieList.find({ 
                   userId, 
                   tmdbId: { 
                       $in: response.data.results.map(item => item.id) 
@@ -381,7 +397,7 @@ export const deleteSingleList = async (req, res) =>{
           });
         }
     
-        const deletedItem = await MediaItem.findOneAndDelete({
+        const deletedItem = await MovieList.findOneAndDelete({
           _id: id,
           userId: req.user._id
         });
@@ -408,7 +424,7 @@ export const deleteSingleList = async (req, res) =>{
 export const deleteAllList = async (req, res) => {
 
     try {
-        const result = await MediaItem.deleteMany({
+        const result = await MovieList.deleteMany({
           userId: req.user._id
         });
     
@@ -444,7 +460,7 @@ export const progressEpisode = async (req, res) =>{
       return res.status(400).json({ message: 'Current episode cannot exceed total episodes' });
       }
       
-      const mediaItem = await MediaItem.findOneAndUpdate(
+      const movieList = await MovieList.findOneAndUpdate(
       { _id: id, userId: req.user._id },
       {
           $set: {
@@ -456,17 +472,17 @@ export const progressEpisode = async (req, res) =>{
       { new: true }
       );
       
-      if (!mediaItem) {
+      if (!movieList) {
       return res.status(404).json({ message: 'Media item not found' });
       }
     
       // If progress is complete, optionally update status
       if (currentEpisode === totalEpisodes && totalEpisodes > 0) {
-      mediaItem.status = 'completed';
-      await mediaItem.save();
+      movieList.status = 'completed';
+      await movieList.save();
       }
     
-      res.json(mediaItem);
+      res.json(movieList);
   
   }catch(error){
       console.error('Error updating progress:', error);
@@ -485,7 +501,7 @@ export const bulkUpdateStatus = async (req, res) => {
           });
       }
 
-      const result = await MediaItem.updateMany(
+      const result = await MovieList.updateMany(
           { 
               _id: { $in: ids }, 
               userId 

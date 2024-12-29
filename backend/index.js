@@ -4,34 +4,41 @@ import morgan from 'morgan';
 import authRoutes from './routes/authRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
 import connectDatabase from './utils/connectDB.js'
-import path from "path";
-
+import animeRoutes from './routes/animeRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 
 const app = express();
 
-const corsOption = {
-  origin:"https://quindecim.up.railway.app",
-  credentials:true
-}
-
-app.use(cors(corsOption));
+app.use(cors());
 app.use(express.json());
 app.use(morgan('dev')); 
 
-const _dirname = path.resolve();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/anime', animeRoutes);
+app.use('/api', adminRoutes);
 
-app.use(express.static(path.join(_dirname, "/frontend/dist")))
-app.get('*', (req, res) =>{
-  res.sendFile(path.resolve(_dirname, "frontend", "dist", "index.html"))
-})
+
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    message: 'Something broke!',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
 
 
 connectDatabase().then(() => {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 })

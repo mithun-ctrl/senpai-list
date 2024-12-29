@@ -1,14 +1,19 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './contexts/authContext'
-import Layout from './components/navbar'
-import Login from './pages/login'
-import Profile from './pages/profile'
-import MediaList from './pages/mediaList'
-import SearchMedia from './pages/searchMedia'
-import Register from './pages/register'
-import Dashboard from './pages/dashboard'
-import NotFound from './pages/notfound'
-import HomePage from './pages/home'
+import Layout from './components/Navbar'
+import Login from './pages/Login'
+import Profile from './pages/Profile'
+import MediaTVList from './pages/MovieTVList'
+import SearchMedia from './pages/MovieSearch'
+import Register from './pages/Register'
+import Dashboard from './pages/Dashboard'
+import NotFound from './pages/NotFound'
+import HomePage from './pages/Home'
+import AnimeSearch from './pages/AnimeSearch'
+import AnimeList from './pages/AnimeList'
+import AnimeRecommendations from './components/AnimeRecommendations'
+import TopAnime from './components/TopAnime'
+import UpcomingAnime from './components/UpcomingAnime'
 
 const App = () => {
   const { isAuthenticated } = useAuth()
@@ -20,9 +25,15 @@ const App = () => {
   <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
     <Route index element={<HomePage />} />
     <Route path="dashboard" element={<Dashboard />} />
-    <Route path="list" element={<MediaList />} />
-    <Route path="search" element={<SearchMedia />} />
+    <Route path="list/movie" element={<MediaTVList />} />
+    <Route path="search/movie" element={<SearchMedia />} />
     <Route path="profile" element={<Profile />} />
+    <Route path='search/anime' element={<AnimeSearch/>} />
+    <Route path='list/anime' element={< AnimeList/>}/>
+    <Route path="/" element={<HomePage />} />
+    <Route path="anime/top-anime" element={<TopAnime />} />
+    <Route path="anime/recommendations" element={<AnimeRecommendations />} />
+    <Route path="anime/upcoming" element={<UpcomingAnime />} />
   </Route>
   <Route path="/404" element={<NotFound />} />
   <Route path="*" element={<Navigate to="/404" replace />} />
