@@ -11,7 +11,7 @@ import path from "path";
 const app = express();
 
 const corsOption = {
-  origin:"https://www.senpailist.site",
+  origin:"https://quindecim010103.up.railway.app",
   credentials:true
 }
 
