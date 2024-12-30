@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://quindecim.up.railway.app/api'
+  baseURL: import.meta.env.VITE_API_URL || 'https://www.senpailist.site/api'
 })
 
 api.setAuthToken = (token) => {
