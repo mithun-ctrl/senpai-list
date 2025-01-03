@@ -88,7 +88,7 @@ const HomePage = () => {
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%+2rem)] h-[calc(100%+2rem)] border border-red-500/20 rounded-full animate-spin-reverse" />
             
             <button
-              onClick={() => navigate('/list')}
+              onClick={() => navigate('list/anime')}
               className="group relative inline-flex items-center gap-3 px-8 py-4 bg-red-800/30 hover:bg-red-700/40 text-white text-lg font-medium rounded-lg transition-all duration-300 overflow-hidden border border-red-600/30 hover:border-red-500/50 backdrop-blur-sm"
             >
               <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-red-600/0 via-red-600/30 to-red-600/0 opacity-0 group-hover:animate-shine" />
