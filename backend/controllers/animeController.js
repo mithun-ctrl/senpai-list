@@ -13,7 +13,7 @@ const getOrSetCache = async (key, fetchFn) => {
             return data;
         }
     }
-    
+
     const data = await fetchFn();
     CACHE.set(key, { data, timestamp: now });
     return data;
@@ -22,22 +22,23 @@ const getOrSetCache = async (key, fetchFn) => {
 export const getSuggestions = async (req, res) => {
     try {
         const { query } = req.query;
-        
+
         if (!query || query.length < 2) {
-            return res.status(400).json({ 
-                error: 'Query must be at least 2 characters long' 
+            return res.status(400).json({
+                error: 'Query must be at least 2 characters long'
             });
         }
 
         const cacheKey = `anime_suggestions:${query}`;
         const suggestions = await getOrSetCache(cacheKey, async () => {
             const response = await animeService.searchAnime(query, 1);
-            
+
             return response.data
                 .slice(0, 5)
                 .map(item => ({
                     id: item.mal_id,
-                    title: item.title_english || item.title,  
+                    title: item.title_english || item.title,
+                    original_title: item.title,
                     type: item.type || 'Unknown',
                     synopsis: item.synopsis,
                     image: item.images?.jpg?.image_url,
@@ -63,13 +64,13 @@ export const getSuggestions = async (req, res) => {
                 }));
         });
 
-        res.json({ 
+        res.json({
             results: suggestions,
             success: true
         });
     } catch (error) {
         console.error('Suggestion Error:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Failed to fetch suggestions',
             message: error.message,
             success: false
@@ -80,7 +81,7 @@ export const getSuggestions = async (req, res) => {
 export const searchAnime = async (req, res) => {
     try {
         const { query, page = 1 } = req.query;
-        
+
         if (!query) {
             return res.status(400).json({ message: 'Search query is required' });
         }
@@ -91,11 +92,11 @@ export const searchAnime = async (req, res) => {
 
             // Check if anime is already in user's list
             const userId = req.user?._id;
-            const userItems = userId ? 
-                await AnimeList.find({ 
-                    userId, 
-                    animeId: { 
-                        $in: response.data.map(item => item.mal_id) 
+            const userItems = userId ?
+                await AnimeList.find({
+                    userId,
+                    animeId: {
+                        $in: response.data.map(item => item.mal_id)
                     }
                 }) : [];
 
@@ -105,7 +106,7 @@ export const searchAnime = async (req, res) => {
 
             return response.data.map(item => ({
                 id: item.mal_id,
-                title: item.title_english || item.title,
+                title: item.title_english,
                 synopsis: item.synopsis,
                 status: item.status || 'Unknown',
                 image: item.images.jpg.image_url,
@@ -145,21 +146,21 @@ export const addToList = async (req, res) => {
         const { animeId, status } = req.body;
         const userId = req.user._id;
 
-        // Check if already in list
         const existing = await AnimeList.findOne({ userId, animeId });
         if (existing) {
-            return res.status(400).json({ 
-                message: 'Anime already in your list' 
+            return res.status(400).json({
+                message: 'Anime already in your list'
             });
         }
 
-        // Fetch anime details from Jikan
         const animeDetails = await animeService.getAnimeDetails(animeId);
-        
+
         const animeList = new AnimeList({
             userId,
             animeId,
-            title: animeDetails.data.title,
+            title: animeDetails.data.title_english,
+            title_english: animeDetails.data.title_english,
+            title_japanese: animeDetails.data.title_japanese,
             image: animeDetails.data.images.jpg.image_url,
             status,
             progress: {
@@ -219,9 +220,9 @@ export const updateProgress = async (req, res) => {
 export const getUserList = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { 
-            status, 
-            sort = 'updatedAt', 
+        const {
+            status,
+            sort = 'updatedAt',
             order = 'desc',
             search,
             rating,
@@ -232,16 +233,16 @@ export const getUserList = async (req, res) => {
         } = req.query;
 
         const query = { userId };
-        
+
         // Basic filters
         if (status) query.status = status;
         if (rating) query.rating = { $gte: parseInt(rating) };
-        
+
         // Search by title
         if (search) {
             query.title = { $regex: search, $options: 'i' };
         }
-        
+
         // Date range filter
         if (dateFrom || dateTo) {
             query.updatedAt = {};
@@ -255,7 +256,7 @@ export const getUserList = async (req, res) => {
 
         // Pagination
         const skip = (page - 1) * limit;
-        
+
         const [animeLists, total] = await Promise.all([
             AnimeList.find(query)
                 .sort(sortOptions)
@@ -280,7 +281,7 @@ export const getUserList = async (req, res) => {
 export const getUserStats = async (req, res) => {
     try {
         const userId = req.user._id;
-        
+
         const stats = await AnimeList.aggregate([
             { $match: { userId: new mongoose.Types.ObjectId(userId) } },
             {
@@ -330,23 +331,23 @@ export const episodeProgress = async (req, res) => {
     try {
         const { id } = req.params;
         const { currentEpisode, totalEpisodes } = req.body;
-        
+
         // Validate input
         if (currentEpisode < 0 || (totalEpisodes !== null && totalEpisodes < 0)) {
-            return res.status(400).json({ 
-                error: 'Episode counts cannot be negative' 
-            });
-        }
-        
-        if (totalEpisodes !== null && currentEpisode > totalEpisodes) {
-            return res.status(400).json({ 
-                error: 'Current episode cannot exceed total episodes' 
+            return res.status(400).json({
+                error: 'Episode counts cannot be negative'
             });
         }
 
-        const anime = await AnimeList.findOne({ 
-            _id: id, 
-            userId: req.user._id 
+        if (totalEpisodes !== null && currentEpisode > totalEpisodes) {
+            return res.status(400).json({
+                error: 'Current episode cannot exceed total episodes'
+            });
+        }
+
+        const anime = await AnimeList.findOne({
+            _id: id,
+            userId: req.user._id
         });
 
         if (!anime) {
@@ -378,33 +379,33 @@ export const episodeProgress = async (req, res) => {
 export const deleteSingleList = async (req, res) => {
     try {
         const { id } = req.params;
-    
+
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ 
-                error: 'Invalid ID format' 
+            return res.status(400).json({
+                error: 'Invalid ID format'
             });
         }
-    
+
         const deletedItem = await AnimeList.findOneAndDelete({
             _id: id,
             userId: req.user._id
         });
-    
+
         if (!deletedItem) {
-            return res.status(404).json({ 
-                error: 'Anime not found or unauthorized' 
+            return res.status(404).json({
+                error: 'Anime not found or unauthorized'
             });
         }
-    
-        res.status(200).json({ 
+
+        res.status(200).json({
             message: 'Anime deleted successfully',
-            deletedItem 
+            deletedItem
         });
-    
+
     } catch (error) {
         console.error('Error deleting anime:', error);
-        res.status(500).json({ 
-            error: 'Internal server error' 
+        res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
@@ -414,22 +415,22 @@ export const deleteAllList = async (req, res) => {
         const result = await AnimeList.deleteMany({
             userId: req.user._id
         });
-    
+
         if (result.deletedCount === 0) {
-            return res.status(404).json({ 
-                message: 'No anime found to delete' 
+            return res.status(404).json({
+                message: 'No anime found to delete'
             });
         }
-    
-        res.status(200).json({ 
+
+        res.status(200).json({
             message: 'All anime deleted successfully',
-            deletedCount: result.deletedCount 
+            deletedCount: result.deletedCount
         });
-    
+
     } catch (error) {
         console.error('Error deleting all anime:', error);
-        res.status(500).json({ 
-            error: 'Internal server error' 
+        res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
@@ -440,32 +441,32 @@ export const bulkUpdateStatus = async (req, res) => {
         const userId = req.user._id;
 
         if (!Array.isArray(ids) || !ids.length) {
-            return res.status(400).json({ 
-                error: 'Invalid or empty ID array' 
+            return res.status(400).json({
+                error: 'Invalid or empty ID array'
             });
         }
 
         const result = await AnimeList.updateMany(
-            { 
-                _id: { $in: ids }, 
-                userId 
+            {
+                _id: { $in: ids },
+                userId
             },
-            { 
-                $set: { 
+            {
+                $set: {
                     status,
-                    updatedAt: new Date() 
-                } 
+                    updatedAt: new Date()
+                }
             }
         );
 
-        res.json({ 
+        res.json({
             message: 'Status updated successfully',
-            modifiedCount: result.modifiedCount 
+            modifiedCount: result.modifiedCount
         });
     } catch (error) {
         console.error('Bulk update error:', error);
-        res.status(500).json({ 
-            error: 'Failed to update status' 
+        res.status(500).json({
+            error: 'Failed to update status'
         });
     }
 };
@@ -497,16 +498,16 @@ export const getRecentRecommendations = async (req, res) => {
             return uniqueRecommendations;
         });
 
-        res.json({ 
+        res.json({
             results: recommendations,
             success: true
         });
     } catch (error) {
         console.error('Recommendations Error:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Failed to fetch recommendations',
             message: error.message,
-            results: [] 
+            results: []
         });
     }
 };
@@ -528,13 +529,13 @@ export const getSeasonUpcoming = async (req, res) => {
             }));
         });
 
-        res.json({ 
+        res.json({
             results: upcoming,
             success: true
         });
     } catch (error) {
         console.error('Upcoming Season Error:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Failed to fetch upcoming season',
             message: error.message
         });
@@ -556,13 +557,13 @@ export const getTopAnime = async (req, res) => {
             }));
         });
 
-        res.json({ 
+        res.json({
             results: topAnime,
             success: true
         });
     } catch (error) {
         console.error('Top Anime Error:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Failed to fetch top anime',
             message: error.message
         });

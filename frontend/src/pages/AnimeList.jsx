@@ -1,11 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../utils/api';
 import {
   Search,
   List,
   ChevronDown,
   Plus,
-  Minus,
   Star,
   LayoutGrid,
   LayoutList,
@@ -24,7 +23,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import EpisodeProgress from '../components/AnimeEpisodeProgress';
 
 const Select = ({ icon: Icon, value, onChange, options }) => (
   <div className="relative">
@@ -71,57 +71,6 @@ const SearchInput = ({ value, onChange, onClear }) => (
   </div>
 );
 
-const EpisodeProgress = ({ current, total, onUpdate }) => {
-  const [localCount, setLocalCount] = useState(current || 0);
-
-  useEffect(() => {
-    setLocalCount(current || 0);
-  }, [current]);
-
-  const handleUpdate = (newCount) => {
-    const validCount = Math.max(0, Math.min(newCount, total || Infinity));
-    setLocalCount(validCount);
-    onUpdate(validCount);
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-400">Episodes</span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleUpdate(localCount - 1)}
-            className="p-1 rounded-full hover:bg-purple-100/10 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={localCount <= 0}
-          >
-            <Minus className="w-4 h-4 text-gray-400" />
-          </button>
-          
-          <span className="text-xs text-gray-400 font-medium min-w-[60px] text-center">
-            {localCount} / {total || '?'}
-          </span>
-          
-          <button
-            onClick={() => handleUpdate(localCount + 1)}
-            className="p-1 rounded-full hover:bg-purple-100/10 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={total && localCount >= total}
-          >
-            <Plus className="w-4 h-4 text-gray-400" />
-          </button>
-        </div>
-      </div>
-      
-      <div className="w-full bg-gray-700 rounded-full h-2">
-        <div
-          className="bg-purple-600 h-full rounded-full transition-all"
-          style={{ width: `${total ? (localCount / total) * 100 : 0}%` }}
-        />
-      </div>
-    </div>
-  );
-};
-
-
 const StatusBadge = ({ status }) => {
   const colors = {
     watching: 'bg-blue-900/50 text-blue-200 border-blue-800',
@@ -130,7 +79,7 @@ const StatusBadge = ({ status }) => {
     on_hold: 'bg-orange-900/50 text-orange-200 border-orange-800',
     dropped: 'bg-red-900/50 text-red-200 border-red-800'
   };
-  
+
   return (
     <span className={`px-2 py-1 rounded-full text-xs font-medium border ${colors[status]}`}>
       {status.replace('_', ' ').toUpperCase()}
@@ -140,44 +89,36 @@ const StatusBadge = ({ status }) => {
 
 const RatingStars = ({ rating, onRatingChange }) => {
   const [hover, setHover] = useState(0);
-  return(
+  return (
     <div className="flex items-center gap-1">
-    {[...Array(10)].map((_, i) => (
-      <button
-        key={i}
-        onClick={() => onRatingChange(i + 1)}
-        onMouseEnter={() => setHover(i + 1)}
-        onMouseLeave={() => setHover(0)}
-        className="focus:outline-none transform transition-transform hover:scale-110"
-      >
-        <Star
-          className={`w-4 h-4 transition-colors duration-200 ${
-            i < (hover || rating) 
-              ? 'text-purple-500 fill-purple-500' 
+      {[...Array(10)].map((_, i) => (
+        <button
+          key={i}
+          onClick={() => onRatingChange(i + 1)}
+          onMouseEnter={() => setHover(i + 1)}
+          onMouseLeave={() => setHover(0)}
+          className="focus:outline-none transform transition-transform hover:scale-110"
+        >
+          <Star
+            className={`w-4 h-4 transition-colors duration-200 ${i < (hover || rating)
+              ? 'text-purple-500 fill-purple-500'
               : 'text-purple-700'
-          }`}
-        />
-      </button>
-    ))}
-    <span  className="ml-2 text-sm text-purple-400">
-      {rating > 0 ? `${rating}/10` : '0/10'}
-    </span>
-  </div>
+              }`}
+          />
+        </button>
+      ))}
+      <span className="ml-2 text-sm text-purple-400">
+        {rating > 0 ? `${rating}/10` : '0/10'}
+      </span>
+    </div>
   )
 }
 
 const AnimeCard = ({ item, onStatusUpdate, onProgressUpdate, onRatingUpdate, statusOptions, viewStyle, onDelete }) => {
-  const cardClass = viewStyle === 'grid'
-    ? "bg-gray-800 rounded-xl shadow-lg hover:shadow-purple-900/30 transition-all duration-300 overflow-hidden border border-purple-900 hover:border-purple-700 group relative"
-    : "bg-gray-800 rounded-xl shadow-lg hover:shadow-purple-900/30 transition-all duration-300 overflow-hidden border border-purple-900 hover:border-purple-700 group flex relative";
+  const cardClass = "bg-gray-800 rounded-xl shadow-lg hover:shadow-blue-900/50 transition-all duration-300 overflow-hidden border-none hover:border-purple-700 group flex relative";
+  const navigate = useNavigate();
 
-  const imageClass = viewStyle === 'grid'
-    ? "relative aspect-[3/2] overflow-hidden"
-    : "relative w-32 overflow-hidden";
-
-  const contentClass = viewStyle === 'grid'
-    ? "p-4 space-y-4"
-    : "p-4 space-y-4 flex-1";
+  const displayTitle = item.title;
 
   return (
     <div className={cardClass}>
@@ -189,11 +130,13 @@ const AnimeCard = ({ item, onStatusUpdate, onProgressUpdate, onRatingUpdate, sta
         <Trash2 className="w-4 h-4 text-red-300" />
       </button>
 
-      <div className={imageClass}>
+      <div className="relative w-48 cursor-pointer group"
+        onClick={() => navigate(`/anime/${item.animeId}`)}
+      >
         {item.image ? (
           <img
             src={item.image}
-            alt={item.title}
+            alt={displayTitle}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
           />
@@ -206,11 +149,11 @@ const AnimeCard = ({ item, onStatusUpdate, onProgressUpdate, onRatingUpdate, sta
           <StatusBadge status={item.status} />
         </div>
       </div>
-      
-      <div className={contentClass}>
+
+      <div className="flex-1 p-4 space-y-4">
         <div>
           <p className="text-sm font-semibold mb-1 line-clamp-2 text-transparent bg-gradient-to-r bg-clip-text from-purple-300 to-purple-200">
-            {item.title}
+            {displayTitle}
           </p>
           {item.type && (
             <div className="text-sm text-gray-500">
@@ -326,7 +269,7 @@ const AnimeList = () => {
           item._id === id ? { ...item, status: newStatus } : item
         )
       );
-      await api.put(`/anime/list/${id}`, { status: newStatus }); 
+      await api.put(`/anime/list/${id}`, { status: newStatus });
     } catch (error) {
       console.error('Error updating status:', error);
       fetchAnimeList();
@@ -357,52 +300,52 @@ const AnimeList = () => {
 
   const handleProgressUpdate = async (id, newCount) => {
     try {
-        const currentItem = animeList.find(item => item._id === id);
-        if (!currentItem) return;
+      const currentItem = animeList.find(item => item._id === id);
+      if (!currentItem) return;
 
-        const totalEpisodes = currentItem.progress?.totalEpisodes || null;
-        const validatedCount = Math.max(0, Math.min(newCount, totalEpisodes || Infinity));
+      const totalEpisodes = currentItem.progress?.totalEpisodes || null;
+      const validatedCount = Math.max(0, Math.min(newCount, totalEpisodes || Infinity));
 
-        // Update local state
-        setAnimeList(prevList =>
-            prevList.map(item =>
-                item._id === id
-                    ? {
-                        ...item,
-                        progress: {
-                            currentEpisode: validatedCount,
-                            totalEpisodes: item.progress?.totalEpisodes
-                        },
-                        status: totalEpisodes && validatedCount === totalEpisodes 
-                            ? 'completed' 
-                            : validatedCount > 0
-                            ? 'watching'
-                            : item.status
-                    }
-                    : item
-            )
-        );
-
-        // Make API call to update the database
-        const response = await api.put(`/anime/list/${id}`, {
-            progress: {
+      // Update local state
+      setAnimeList(prevList =>
+        prevList.map(item =>
+          item._id === id
+            ? {
+              ...item,
+              progress: {
                 currentEpisode: validatedCount,
-                totalEpisodes: currentItem.progress?.totalEpisodes
+                totalEpisodes: item.progress?.totalEpisodes
+              },
+              status: totalEpisodes && validatedCount === totalEpisodes
+                ? 'completed'
+                : validatedCount > 0
+                  ? 'watching'
+                  : item.status
             }
-        });
+            : item
+        )
+      );
 
-        // Update local state with server response to ensure consistency
-        setAnimeList(prevList =>
-            prevList.map(item =>
-                item._id === id ? { ...item, ...response.data } : item
-            )
-        );
+      // Make API call to update the database
+      const response = await api.put(`/anime/list/${id}`, {
+        progress: {
+          currentEpisode: validatedCount,
+          totalEpisodes: currentItem.progress?.totalEpisodes
+        }
+      });
+
+      // Update local state with server response to ensure consistency
+      setAnimeList(prevList =>
+        prevList.map(item =>
+          item._id === id ? { ...item, ...response.data } : item
+        )
+      );
     } catch (error) {
-        console.error('Error updating progress:', error);
-        // Revert back to server state on error
-        fetchAnimeList();
+      console.error('Error updating progress:', error);
+      // Revert back to server state on error
+      fetchAnimeList();
     }
-};
+  };
 
   const clearSearch = () => setFilters({ ...filters, search: '' });
 
@@ -412,7 +355,7 @@ const AnimeList = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-purple-300 text-transparent bg-clip-text">
-            Anime コレクション
+              Anime コレクション
             </h1>
             <p className="text-gray-400 mt-1">
               {totalItems} soul in your collection
@@ -423,21 +366,19 @@ const AnimeList = () => {
             <div className="flex items-center bg-gray-700 rounded-lg p-1">
               <button
                 onClick={() => setViewStyle('grid')}
-                className={`p-2 rounded-md transition-colors ${
-                  viewStyle === 'grid'
-                    ? 'bg-gray-800 shadow-lg shadow-purple-900/20'
-                    : 'text-gray-400 hover:text-purple-400'
-                }`}
+                className={`p-2 rounded-md transition-colors ${viewStyle === 'grid'
+                  ? 'bg-gray-800 shadow-lg shadow-purple-900/20'
+                  : 'text-gray-400 hover:text-purple-400'
+                  }`}
               >
                 <LayoutGrid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewStyle('list')}
-                className={`p-2 rounded-md transition-colors ${
-                  viewStyle === 'list'
-                    ? 'bg-gray-800 shadow-lg shadow-purple-900/20'
-                    : 'text-gray-400 hover:text-purple-400'
-                }`}
+                className={`p-2 rounded-md transition-colors ${viewStyle === 'list'
+                  ? 'bg-gray-800 shadow-lg shadow-purple-900/20'
+                  : 'text-gray-400 hover:text-purple-400'
+                  }`}
               >
                 <LayoutList className="w-4 h-4" />
               </button>
@@ -453,8 +394,8 @@ const AnimeList = () => {
               </button>
             )}
 
-            <NavLink 
-              to="/search/anime" 
+            <NavLink
+              to="/search/anime"
               className="inline-flex items-center gap-2 px-4 py-2 bg-purple-800 text-white rounded-lg hover:bg-purple-700 transition-colors border border-purple-600"
             >
               <Plus className="w-4 h-4" />
@@ -476,7 +417,7 @@ const AnimeList = () => {
               }))
             ]}
           />
-          
+
           <SearchInput
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
@@ -511,21 +452,19 @@ const AnimeList = () => {
       </AlertDialog>
 
       {loading ? (
-        <div className={`grid gap-6 ${
-          viewStyle === 'grid'
-            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-            : 'grid-cols-1'
-        }`}>
+        <div className={`grid gap-6 ${viewStyle === 'grid'
+          ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+          : 'grid-cols-1'
+          }`}>
           {[...Array(8)].map((_, i) => (
             <LoadingSkeleton key={i} />
           ))}
         </div>
       ) : animeList.length > 0 ? (
-        <div className={`grid gap-6 ${
-          viewStyle === 'grid'
-            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-            : 'grid-cols-1'
-        }`}>
+        <div className={`grid gap-6 ${viewStyle === 'grid'
+          ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3'
+          : 'grid-cols-1'
+          }`}>
           {animeList.map((item) => (
             <AnimeCard
               key={item._id}
