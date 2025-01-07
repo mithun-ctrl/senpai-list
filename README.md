@@ -96,3 +96,7 @@ Project Link: [https://github.com/mithun-ctrl/senpai-list](https://github.com/mi
 ## License
 
 This project is licensed under the MIT License
+
+## You Can Support Here
+
+  Support - [By Me a Coffie](https://buymeacoffee.com/itsmithun)
