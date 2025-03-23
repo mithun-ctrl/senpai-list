@@ -23,6 +23,20 @@ const Dashboard = () => {
     }
   };
 
+  const userSatifactionLevel = (rating) =>{
+    if(rating>=8){
+      return "Bhayankar Cinema 🎬🔥";
+    }else if(rating>=6){
+      return "Mast Dekhne Layak 😎🍿";
+    }else if(rating>=4){
+      return "Thoda Theek Jadda Bekar 🤷‍♂️";
+    }else if(rating>0){
+      return "Poora Time Waste 🚮🤡"
+    }else {
+      return "Abhi Dekha Hi Nahi 💤";
+    }
+  };
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -140,6 +154,9 @@ const Dashboard = () => {
                       Episode {item.progress.currentEpisode}/{item.progress.totalEpisodes}
                     </p>
                   )}
+                  <p className="text-sm text-gray-400 mt-1">
+                      Rating {item.userRating || '🫠'}/10 - {userSatifactionLevel(item.userRating)}
+                  </p>
                 </div>
               </div>
             </div>
