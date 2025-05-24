@@ -83,7 +83,7 @@ npm start
 
 Email - [itsmithun01@gmail.com](mailto:itsmithun01@gmail.com)
 
-Project Link: [https://github.com/mithun-ctrl/senpai-list](https://github.com/mithun-ctrl/senpai-list)
+Website: [Senpai List](https://senpailist.site) 
 
 ## Acknowledgments
 
