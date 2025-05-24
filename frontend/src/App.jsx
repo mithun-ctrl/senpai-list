@@ -14,6 +14,7 @@ import AnimeList from './pages/AnimeList'
 import AnimeRecommendations from './components/AnimeRecommendations'
 import TopAnime from './components/TopAnime'
 import UpcomingAnime from './components/UpcomingAnime'
+import AnimeDashboard from './pages/AnimeDashboard'
 
 const App = () => {
   const { isAuthenticated } = useAuth()
@@ -33,6 +34,7 @@ const App = () => {
     <Route path="/" element={<HomePage />} />
     <Route path="anime/top-anime" element={<TopAnime />} />
     <Route path="anime/recommendations" element={<AnimeRecommendations />} />
+    <Route path='anime-dashboard' element={<AnimeDashboard/>}/>
     <Route path="anime/upcoming" element={<UpcomingAnime />} />
   </Route>
   <Route path="/404" element={<NotFound />} />
